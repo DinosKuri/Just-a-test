@@ -678,9 +678,9 @@ def main():
                     base_url = line.split('=', 1)[1].strip()
                     break
             else:
-                base_url = "https://antifraud-exam.preview.emergentagent.com"
+                base_url = "https://geografia-puc.preview.emergentagent.com"
     except:
-        base_url = "https://antifraud-exam.preview.emergentagent.com"
+        base_url = "https://geografia-puc.preview.emergentagent.com"
     
     print(f"🌐 Using backend URL: {base_url}")
     

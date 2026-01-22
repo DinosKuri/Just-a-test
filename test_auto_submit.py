@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import uuid
 
 def test_auto_submit():
-    base_url = "https://antifraud-exam.preview.emergentagent.com"
+    base_url = "https://geografia-puc.preview.emergentagent.com"
     api_url = f"{base_url}/api"
     
     # Login as existing admin
