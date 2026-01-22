@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../src/api/client';
@@ -12,12 +13,15 @@ interface LiveSession {
   roll_number: string;
   exam_title: string;
   risk_score: number;
+  risk_level: string;
   fraud_events_count: number;
   start_time: string;
   answers_count: number;
+  camera_checks_pending: number;
 }
 
 export default function LiveMonitoringScreen() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<LiveSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,7 +40,6 @@ export default function LiveMonitoringScreen() {
 
   useEffect(() => {
     fetchSessions();
-    // Auto-refresh every 10 seconds
     const interval = setInterval(fetchSessions, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -46,10 +49,38 @@ export default function LiveMonitoringScreen() {
     fetchSessions();
   }, []);
 
-  const getRiskColor = (score: number) => {
-    if (score >= 70) return '#EF4444';
-    if (score >= 40) return '#F59E0B';
-    return '#10B981';
+  const handleCameraCheck = async (sessionId: string, studentName: string) => {
+    Alert.alert(
+      'Request Camera Check',
+      `Send camera check request to ${studentName}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Request', onPress: async () => {
+          try {
+            await apiClient.post(`/admin/camera-check/${sessionId}`);
+            Alert.alert('Success', 'Camera check requested');
+            fetchSessions();
+          } catch (error: any) {
+            Alert.alert('Error', error.response?.data?.detail || 'Failed to request camera check');
+          }
+        }}
+      ]
+    );
+  };
+
+  const handleViewReport = (studentId: string, sessionId: string) => {
+    router.push({
+      pathname: '/(admin)/integrity-report',
+      params: { studentId, sessionId }
+    });
+  };
+
+  const getRiskColor = (level: string) => {
+    switch (level) {
+      case 'HIGH': return '#EF4444';
+      case 'MODERATE': return '#F59E0B';
+      default: return '#10B981';
+    }
   };
 
   return (
@@ -63,6 +94,23 @@ export default function LiveMonitoringScreen() {
         <View style={styles.headerInfo}>
           <View style={styles.liveDot} />
           <Text style={styles.headerText}>{sessions.length} active exam sessions</Text>
+          <Text style={styles.autoRefresh}>Auto-refresh: 10s</Text>
+        </View>
+
+        {/* Quick Stats */}
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{sessions.filter(s => s.risk_level === 'HIGH').length}</Text>
+            <Text style={styles.statLabel}>High Risk</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{sessions.filter(s => s.risk_level === 'MODERATE').length}</Text>
+            <Text style={styles.statLabel}>Moderate</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{sessions.filter(s => s.camera_checks_pending > 0).length}</Text>
+            <Text style={styles.statLabel}>Pending Checks</Text>
+          </View>
         </View>
 
         {loading ? (
@@ -86,8 +134,9 @@ export default function LiveMonitoringScreen() {
                   <Text style={styles.studentName}>{session.student_name}</Text>
                   <Text style={styles.rollNumber}>{session.roll_number}</Text>
                 </View>
-                <View style={[styles.riskIndicator, { backgroundColor: getRiskColor(session.risk_score) }]}>
+                <View style={[styles.riskIndicator, { backgroundColor: getRiskColor(session.risk_level) }]}>
                   <Text style={styles.riskValue}>{session.risk_score}</Text>
+                  <Text style={styles.riskLabel}>{session.risk_level}</Text>
                 </View>
               </View>
               
@@ -100,27 +149,57 @@ export default function LiveMonitoringScreen() {
               
               <View style={styles.sessionStats}>
                 <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{session.answers_count}</Text>
-                  <Text style={styles.statLabel}>Answered</Text>
+                  <Text style={styles.sessionStatValue}>{session.answers_count}</Text>
+                  <Text style={styles.sessionStatLabel}>Answered</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                  <Text style={[styles.statValue, session.fraud_events_count > 0 && { color: '#EF4444' }]}>
+                  <Text style={[styles.sessionStatValue, session.fraud_events_count > 0 && { color: '#EF4444' }]}>
                     {session.fraud_events_count}
                   </Text>
-                  <Text style={styles.statLabel}>Alerts</Text>
+                  <Text style={styles.sessionStatLabel}>Alerts</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                  <Text style={styles.statValue}>
+                  <Text style={styles.sessionStatValue}>
                     {format(new Date(session.start_time), 'h:mm a')}
                   </Text>
-                  <Text style={styles.statLabel}>Started</Text>
+                  <Text style={styles.sessionStatLabel}>Started</Text>
                 </View>
+              </View>
+
+              {/* Action Buttons */}
+              <View style={styles.sessionActions}>
+                <TouchableOpacity
+                  style={styles.cameraButton}
+                  onPress={() => handleCameraCheck(session.session_id, session.student_name)}
+                >
+                  <Ionicons name="camera" size={18} color="#3B82F6" />
+                  <Text style={styles.cameraButtonText}>Camera Check</Text>
+                  {session.camera_checks_pending > 0 && (
+                    <View style={styles.pendingBadge}>
+                      <Text style={styles.pendingText}>{session.camera_checks_pending}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.reportButton}
+                  onPress={() => handleViewReport(session.student_id, session.session_id)}
+                >
+                  <Ionicons name="document-text" size={18} color="#4F46E5" />
+                  <Text style={styles.reportButtonText}>Report</Text>
+                </TouchableOpacity>
               </View>
             </View>
           ))
         )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Geography PUC Test Center</Text>
+          <Text style={styles.footerSubtext}>Developed by Dintea</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -141,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E293B',
     padding: 12,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 16,
     gap: 8,
   },
   liveDot: {
@@ -153,6 +232,33 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 14,
     color: '#E2E8F0',
+    flex: 1,
+  },
+  autoRefresh: {
+    fontSize: 11,
+    color: '#64748B',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#1E293B',
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#F1F5F9',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#94A3B8',
+    marginTop: 2,
   },
   loadingText: {
     fontSize: 16,
@@ -214,16 +320,21 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   riskIndicator: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     alignItems: 'center',
+    minWidth: 60,
   },
   riskValue: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFFFFF',
+  },
+  riskLabel: {
+    fontSize: 9,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   sessionMeta: {
     marginBottom: 12,
@@ -242,17 +353,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F172A',
     borderRadius: 8,
     padding: 12,
+    marginBottom: 12,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
   },
-  statValue: {
+  sessionStatValue: {
     fontSize: 16,
     fontWeight: '600',
     color: '#F1F5F9',
   },
-  statLabel: {
+  sessionStatLabel: {
     fontSize: 11,
     color: '#64748B',
     marginTop: 2,
@@ -260,5 +372,67 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     backgroundColor: '#334155',
+  },
+  sessionActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  cameraButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3B82F620',
+    paddingVertical: 10,
+    borderRadius: 8,
+    gap: 6,
+  },
+  cameraButtonText: {
+    fontSize: 13,
+    color: '#3B82F6',
+    fontWeight: '500',
+  },
+  pendingBadge: {
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  pendingText: {
+    fontSize: 10,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  reportButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4F46E520',
+    paddingVertical: 10,
+    borderRadius: 8,
+    gap: 6,
+  },
+  reportButtonText: {
+    fontSize: 13,
+    color: '#4F46E5',
+    fontWeight: '500',
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: 10,
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  footerSubtext: {
+    fontSize: 12,
+    color: '#475569',
+    marginTop: 4,
   },
 });
