@@ -67,7 +67,8 @@ export default function StudentLogin() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.appName}>GPTC</Text>
+            <Text style={styles.title}>Student Login</Text>
             <Text style={styles.subtitle}>Login to access your exams</Text>
           </View>
 
@@ -104,6 +105,10 @@ export default function StudentLogin() {
               </TouchableOpacity>
             </View>
           </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Developed by Dintea</Text>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -124,6 +129,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 32,
+  },
+  appName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4F46E5',
+    marginBottom: 8,
   },
   title: {
     fontSize: 28,
@@ -154,5 +165,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4F46E5',
     fontWeight: '600',
+  },
+  footer: {
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#64748B',
   },
 });

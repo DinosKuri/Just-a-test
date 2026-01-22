@@ -90,8 +90,8 @@ export default function StudentDashboard() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hello, {user?.full_name?.split(' ')[0]}</Text>
-          <Text style={styles.subGreeting}>{user?.roll_number} | {user?.department}</Text>
+          <Text style={styles.appName}>GPTC</Text>
+          <Text style={styles.subGreeting}>{user?.full_name} | {user?.roll_number}</Text>
         </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Ionicons name="log-out-outline" size={24} color="#EF4444" />
@@ -168,6 +168,12 @@ export default function StudentDashboard() {
             );
           })
         )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Pachhunga University College</Text>
+          <Text style={styles.footerSubtext}>Developed by Dintea</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -187,15 +193,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#1E293B',
   },
-  greeting: {
-    fontSize: 24,
+  appName: {
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#F1F5F9',
+    color: '#4F46E5',
   },
   subGreeting: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#94A3B8',
-    marginTop: 4,
+    marginTop: 2,
   },
   logoutButton: {
     padding: 8,
@@ -289,5 +295,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: 10,
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  footerSubtext: {
+    fontSize: 12,
+    color: '#475569',
+    marginTop: 4,
   },
 });

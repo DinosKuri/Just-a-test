@@ -63,6 +63,7 @@ export default function AdminLogin() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
+            <Text style={styles.appName}>GPTC Admin</Text>
             <Text style={styles.title}>Admin Portal</Text>
             <Text style={styles.subtitle}>Login to manage exams and monitor students</Text>
           </View>
@@ -101,6 +102,10 @@ export default function AdminLogin() {
               </TouchableOpacity>
             </View>
           </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Developed by Dintea</Text>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -121,6 +126,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 32,
+  },
+  appName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4F46E5',
+    marginBottom: 8,
   },
   title: {
     fontSize: 28,
@@ -151,5 +162,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4F46E5',
     fontWeight: '600',
+  },
+  footer: {
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#64748B',
   },
 });

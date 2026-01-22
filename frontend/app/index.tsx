@@ -23,13 +23,15 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <Ionicons name="school" size={80} color="#4F46E5" />
+          <View style={styles.logoCircle}>
+            <Ionicons name="earth" size={60} color="#4F46E5" />
+          </View>
         </View>
         
-        <Text style={styles.title}>College Exam Portal</Text>
-        <Text style={styles.subtitle}>
-          Secure examination platform with AI-powered fraud detection
-        </Text>
+        <Text style={styles.title}>Geography PUC Test Center</Text>
+        <Text style={styles.subtitle}>GPTC</Text>
+        <Text style={styles.institution}>Pachhunga University College</Text>
+        <Text style={styles.department}>Department of Geography</Text>
 
         <View style={styles.features}>
           <View style={styles.featureItem}>
@@ -63,6 +65,11 @@ export default function WelcomeScreen() {
             <Text style={styles.secondaryButtonText}>Admin Login</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Developed by</Text>
+          <Text style={styles.footerBrand}>Dintea</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -80,38 +87,59 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
+  },
+  logoCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#1E293B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#4F46E5',
   },
   title: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#F1F5F9',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4F46E5',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  institution: {
+    fontSize: 15,
     color: '#94A3B8',
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+  },
+  department: {
+    fontSize: 14,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 28,
   },
   features: {
-    marginBottom: 40,
+    marginBottom: 32,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
     paddingHorizontal: 20,
   },
   featureText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#E2E8F0',
     marginLeft: 12,
   },
   buttonContainer: {
-    gap: 16,
+    gap: 14,
   },
   primaryButton: {
     flexDirection: 'row',
@@ -134,13 +162,27 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#FFFFFF',
   },
   secondaryButtonText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#4F46E5',
+  },
+  footer: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  footerBrand: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#94A3B8',
+    marginTop: 2,
   },
 });

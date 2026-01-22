@@ -70,7 +70,7 @@ export default function AdminDashboard() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Admin Dashboard</Text>
+          <Text style={styles.appName}>GPTC Admin</Text>
           <Text style={styles.subGreeting}>{user?.full_name}</Text>
         </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
@@ -144,6 +144,12 @@ export default function AdminDashboard() {
             <Ionicons name="chevron-forward" size={24} color="#94A3B8" />
           </TouchableOpacity>
         )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Geography PUC Test Center</Text>
+          <Text style={styles.footerSubtext}>Developed by Dintea</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -163,15 +169,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#1E293B',
   },
-  greeting: {
-    fontSize: 24,
+  appName: {
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#F1F5F9',
+    color: '#4F46E5',
   },
   subGreeting: {
     fontSize: 14,
     color: '#94A3B8',
-    marginTop: 4,
+    marginTop: 2,
   },
   logoutButton: {
     padding: 8,
@@ -261,6 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     gap: 12,
+    marginBottom: 24,
   },
   alertContent: {
     flex: 1,
@@ -274,5 +281,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#FCD34D',
     marginTop: 2,
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: 10,
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  footerSubtext: {
+    fontSize: 12,
+    color: '#475569',
+    marginTop: 4,
   },
 });
