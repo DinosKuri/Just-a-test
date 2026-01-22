@@ -21,9 +21,12 @@ export default function AdminLayout() {
       <Stack.Screen name="exam/[id]" options={{ title: 'Exam Details' }} />
       <Stack.Screen name="create-exam" options={{ title: 'Create Exam' }} />
       <Stack.Screen name="add-question" options={{ title: 'Add Question' }} />
+      <Stack.Screen name="upload-questions" options={{ title: 'Upload Questions (Word)' }} />
+      <Stack.Screen name="exam-preview" options={{ title: 'Exam Preview' }} />
       <Stack.Screen name="students" options={{ title: 'Students' }} />
       <Stack.Screen name="fraud-alerts" options={{ title: 'Fraud Alerts' }} />
       <Stack.Screen name="live-monitoring" options={{ title: 'Live Monitoring' }} />
+      <Stack.Screen name="integrity-report" options={{ title: 'Integrity Report' }} />
     </Stack>
   );
 }
